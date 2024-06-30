@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Intervention\Image\ImageManager;
@@ -57,11 +58,47 @@ class UserController extends Controller
     }
 
     public function profile(User $user) {
+        $currentlyFollowing = 0;
+
+        if(auth()->check()) {
+            $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id], ['followeduser', '=', $user->id]])->count();
+        }
         return view('profile-posts',
         [
         'username' => $user -> username,
         'posts' => $user->posts()->latest()->get(),
-        'postCount' => $user->posts()->count()
+        'postCount' => $user->posts()->count(),
+        'currentlyFollowing' => $currentlyFollowing
+        ]);
+    }
+
+    public function profileFollowers(User $user) {
+        $currentlyFollowing = 0;
+
+        if(auth()->check()) {
+            $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id], ['followeduser', '=', $user->id]])->count();
+        }
+        return view('profile-followers',
+        [
+        'username' => $user -> username,
+        'posts' => $user->posts()->latest()->get(),
+        'postCount' => $user->posts()->count(),
+        'currentlyFollowing' => $currentlyFollowing
+        ]);
+    }
+
+    public function profileFollowing(User $user) {
+        $currentlyFollowing = 0;
+
+        if(auth()->check()) {
+            $currentlyFollowing = Follow::where([['user_id', '=', auth()->user()->id], ['followeduser', '=', $user->id]])->count();
+        }
+        return view('profile-following',
+        [
+        'username' => $user -> username,
+        'posts' => $user->posts()->latest()->get(),
+        'postCount' => $user->posts()->count(),
+        'currentlyFollowing' => $currentlyFollowing
         ]);
     }
 
@@ -93,4 +130,5 @@ class UserController extends Controller
 
         return back()->with('success', 'Avatar has been changed!');
     }
+
 }
